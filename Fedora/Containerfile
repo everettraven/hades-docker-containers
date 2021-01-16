@@ -1,8 +1,10 @@
-FROM ubuntu:20.04
+FROM fedora
 
-RUN apt-get update && apt-get install -y openssh-server
-RUN rm -rf /var/lib/apt/lists/*
-RUN mkdir /var/run/sshd
+RUN  yum upgrade -y && \
+     yum -y install procps openssh-server && \
+     systemctl enable sshd && \
+     yum -y clean all
+
 RUN echo 'root:root' | chpasswd
 RUN sed -i 's/#*PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 
@@ -13,4 +15,4 @@ ENV NOTVISIBLE="in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/sbin/init"]
